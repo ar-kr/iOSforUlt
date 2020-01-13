@@ -4,3 +4,4 @@
 !/UltGameProt1/GameTurnView.swift
 
 *.xcodeproj
+.DS_Store
