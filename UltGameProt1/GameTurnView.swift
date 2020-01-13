@@ -17,6 +17,7 @@ struct GameTurnView: View {
     @State var point2 = 0
     @State var flag = false
     var body: some View {
+        /*
         NavigationView{
             VStack(alignment: .center){
                 Text("nターン")
@@ -93,6 +94,71 @@ struct GameTurnView: View {
         }
         .navigationBarBackButtonHidden(true)
         .frame(maxHeight: .infinity)
-        .background(Color.blue)
+        .background(Color.blue)*/
+        
+        VStack {
+            VStack(alignment: .center){
+                View1()
+                View2()
+                View3()
+                View4()
+                View5()
+                View6()
+                //Spacer()
+            }
+            .frame(width: 360, height: 650, alignment: .center)
+            .background(Color.yellow)
+            .navigationBarBackButtonHidden(true)
+        
+            Spacer()
+        }
+    }
+}
+
+struct View1: View {
+    var body: some View {
+        Text("View1")
+            .frame(width: 360, height: 50, alignment: .center)
+            .background(Color.red)
+    }
+}
+
+struct View2: View {
+    var body: some View {
+        Text("View2")
+            .frame(height: 50, alignment: .center)
+            .background(Color.blue)
+    }
+}
+
+struct View3: View {
+    var body: some View {
+        Text("View3")
+            .frame(height: 80, alignment: .center)
+            .background(Color.red)
+    }
+}
+
+struct View4: View {
+    var body: some View {
+        Text("View4")
+            .frame(height: 120, alignment: .center)
+            .background(Color.blue)
+    }
+}
+
+struct View5: View {
+    var body: some View {
+        Text("View5")
+            .frame(height: 50, alignment: .center)
+            .background(Color.red)
+    }
+}
+
+struct View6: View {
+    var body: some View {
+        Text("View6")
+            .frame(height: 80, alignment: .center)
+            .background(Color.blue)
     }
 }
