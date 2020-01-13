@@ -6,8 +6,39 @@
 //  Copyright © 2020 Airi.K. All rights reserved.
 //
 
-import UIKit
 import SwiftUI
+import Combine
+
+class TimerHolder : ObservableObject {
+    @Published var timer : Timer!
+    @Published var sec = 0
+    @Published var min = 0
+    @Published var outSec = 0
+    
+    func start() {
+        self.timer?.invalidate()
+        //self.sec = 0
+        self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true){_ in
+            self.sec += 1
+            if(self.sec == 60){
+                self.min += 1
+                self.sec = 0
+            }
+        }
+    }
+    func outStart() {
+        self.timer?.invalidate()
+        self.outSec = 0
+        self.timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true){_ in
+            self.outSec += 1
+        }
+    }
+    func outStop() {
+        self.outSec = 0
+        start()
+    }
+    
+}
 
 struct GameTurnView: View {
     @Binding var team1: String
@@ -15,19 +46,20 @@ struct GameTurnView: View {
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
     @State var point1 = 0
     @State var point2 = 0
-    @State var flag = false
+    @State var turn = 1
+    //@State var flag = false
     var body: some View {
         VStack {
             VStack(alignment: .center){
-                View1()
-                View2()
-                View3()
+                View1(turn: $turn, point1: $point1, point2: $point2)
+                View2(team1: $team1, team2: $team2)
+                View3(point1: $point1, point2: $point2)
                 View4()
                 View5()
-                View6()
-                //Spacer()
+                View6(point1: $point1, point2: $point2)
+                Spacer()
             }
-            .frame(width: 360, height: 500, alignment: .center)
+            .frame(width: 360, height: 700, alignment: .center)
             .background(Color.yellow)
             .navigationBarBackButtonHidden(true)
         
@@ -37,8 +69,11 @@ struct GameTurnView: View {
 }
 
 struct View1: View {
+    @Binding var turn: Int
+    @Binding var point1: Int
+    @Binding var point2: Int
     var body: some View {
-        Text("nターン")
+        Text(String(turn+point1+point2) + " ターン")
             .font(.largeTitle)
             //.multilineTextAlignment(.center)
             .frame(width: 360, height: 50, alignment: .center)
@@ -46,6 +81,8 @@ struct View1: View {
 }
 
 struct View2: View {
+    @Binding var team1: String
+    @Binding var team2: String
     var body: some View {
         HStack{
             Text(team1)
@@ -60,6 +97,8 @@ struct View2: View {
 }
 
 struct View3: View {
+    @Binding var point1: Int
+    @Binding var point2: Int
     var body: some View {
         HStack{
             Text(String(point1))
@@ -77,48 +116,84 @@ struct View3: View {
 }
 
 struct View4: View {
+    @EnvironmentObject var timerHolder : TimerHolder
+    
+    @State var Min = ""
+    @State var sec = 0
+    
     var body: some View {
-        Text("試合時間")
-            .font(.largeTitle)
-            .frame(height: 120, alignment: .center)
+        VStack{
+            //Button("Start"){self.timerHolder.start()}
+            Button(action: {
+                self.timerHolder.start()
+            }){
+                Text("Start")
+            }
+            .frame(height: 20.0)
+            HStack{
+                //Text(String(format: "%02d", self.timerHolder.min))
+                Text(String(self.timerHolder.min))
+                    .font(.largeTitle)
+                    .frame(height: 100.0)
+                Text(":")
+                    .font(.largeTitle)
+                    .frame(height: 100.0)
+                Text(String(self.timerHolder.sec))
+                    .font(.largeTitle)
+                    .frame(height: 100.0)
+            }
+            .frame(height: 100.0)
+            
+        }
     }
 }
 
 struct View5: View {
+    @EnvironmentObject var timerHolder : TimerHolder
+    @State var flag = false
     var body: some View {
-        Button(action: {
-            if(self.flag){
-                //self.labelText = "SwiftUI Test"
-                self.flag = false
+        VStack {
+            Button(action: {
+                if(self.flag){
+                    //self.labelText = "SwiftUI Test"
+                    self.timerHolder.outStop()
+                    self.flag = false
+                }
+                else{
+                    //self.labelText = "tapped !"
+                    self.timerHolder.outStart()
+                    self.flag = true
+                }
+            }){
+                Text("タイムアウト")
+                    .font(.largeTitle)
+                    .foregroundColor(Color.white)
+                    .multilineTextAlignment(.center)
+                    .frame(height: 30.0)
             }
-            else{
-                //self.labelText = "tapped !"
-                self.flag = true
-            }
-        }){
-            Text("タイムアウト")
-                .font(.largeTitle)
-                .foregroundColor(Color.white)
-                .multilineTextAlignment(.center)
-                .frame(height: 50.0)
+            //.padding(.all)
+            .background(Color.blue)
+            
+            Text(String(self.timerHolder.outSec))
+                .frame(height: 20)
         }
-        //.padding(.all)
-        .background(Color.blue)
     }
 }
 
 struct View6: View {
+    @Binding var point1: Int
+    @Binding var point2: Int
     var body: some View {
         HStack{
             Button(action: {
-                point1 += 1
+                self.point1 += 1
             }){
                 Text("自分得点")
                     .font(.largeTitle)
             }
             .padding(.all)
             Button(action: {
-                point2 += 1
+                self.point2 += 1
             }){
                 Text("相手得点")
                     .font(.largeTitle)
