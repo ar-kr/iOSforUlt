@@ -1,0 +1,6 @@
+/UltGameProt1/*
+
+!/UltGameProt1/*.swift
+
+*.xcodeproj
+.DS_Store
